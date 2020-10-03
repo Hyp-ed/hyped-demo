@@ -1,10 +1,10 @@
 /*
- * Author: Gregory Dayao, Yeyao Liu
+ * Author: Branislav Pilnan
  * Organisation: HYPED
- * Date:
- * Description: Main file for Imu
+ * Date: 03/10/2020
+ * Description: Defines the IMU class - a sensor driver for "measuring" acceleration
  *
- *    Copyright 2019 HYPED
+ *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -25,112 +25,40 @@
 
 #include "sensors/interface.hpp"
 #include "utils/logger.hpp"
-#include "utils/io/spi.hpp"
-#include "utils/io/gpio.hpp"
 
 namespace hyped {
 
-using hyped::utils::io::SPI;
 using utils::Logger;
-using utils::io::GPIO;
-using data::NavigationVector;
 
 namespace sensors {
 
+/*
+ * @brief An extremely simplified version of an IMU sensor.
+ *
+ * A real sensor driver would be *much* more complicated, handling a lot of communication with the
+ * actual hardware sensor. IMUs usually require a complex series of instructions only to be started
+ * up and configured. Getting the data from them also requires a fair bit of code.
+ */
 class Imu : public ImuInterface {
  public:
-  Imu(Logger& log, uint32_t pin, bool is_fifo);
-  ~Imu();
+  Imu(Logger& log);
   /*
    *  @brief Returns if the sensor is online
    *
    *  @return true if the sensor is online
    */
-  bool isOnline() override {
-    return whoAmI();
-  }
+  bool isOnline() override;
   /*
-   *  @brief Get the Imu data and update the pointer
-   */
-  void getData(ImuData* data) override;
-
-  /**
-   * @brief calculates number of bytes in FIFO and reads number of full sets (6 bytes) into vector of ImuData
-   * See data.hpp for ImuData struct
+   *  @brief Get the forward acceleration and update the pointer
    *
-   * @param data ImuData vector to read number of full sets into
-   * @return 0 if empty
+   * This simplified version only calculates what the accelaration _should_ be based on the mass of
+   * the pod and the forces from motors and brakes.
    */
-  int readFifo(ImuData* data);
+  void getAccelerationX(ImuData* data) override;
 
  private:
-  /*
-   *  @brief Sets the range for the accelerometer by writing to the IMU given the write register address
-   */
-  void setAcclScale();
-  void init();
-
-  /**
-   * @brief Resets and enables fifo after sleeping 500 ms, frame size is set to 6 for xyz acceleration
-   */
-  void enableFifo();
-
-  /**
-   * @brief used for SPI chipselect with GPIO pin for IMU
-   */
-  void select();
-
-  /**
-   * @brief used for SPI chipselect with GPIO pin for IMU
-   */
-  void deSelect();
-
-  /**
-   * @brief checks what address the sensor is at
-   *
-   * @return true
-   * @return false
-   */
-  bool whoAmI();
-
-  void selectBank(uint8_t switch_bank);
-
-  /**
-   * @brief chipselects and and writes data (byte) to register address
-   *
-   * @param write_reg write register address
-   * @param write_data byte of data to write
-   */
-  void writeByte(uint8_t write_reg, uint8_t write_data);
-
-  /**
-   * @brief uses chip select and reads necessary data
-   *
-   * @param read_reg read register address
-   * @param read_data pointer to data desired to read
-   */
-  void readByte(uint8_t read_reg, uint8_t *read_data);
-
-  /**
-   * @brief same as readByte but with desired length
-   *
-   * @param read_reg
-   * @param read_buff
-   * @param length number of bytes to read
-   */
-  void readBytes(uint8_t read_reg, uint8_t *read_buff, uint8_t length);
-
- private:
-  SPI&    spi_;
   Logger& log_;
-  GPIO    gpio_;
-  uint32_t pin_;
-  bool is_fifo_;
-  double  acc_divider_;
   bool    is_online_;
-  uint8_t user_bank_;
-  static const uint64_t time_start;
-  size_t kFrameSize_;               // initialised as 6 in enableFifo()
 };
 
 }}  // namespace hyped::sensors

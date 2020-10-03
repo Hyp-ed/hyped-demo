@@ -1,10 +1,10 @@
 /*
- * Author:
+ * Author: HYPED
  * Organisation: HYPED
- * Date:
- * Description: IMU manager for getting IMU data from around the pod and pushes to data struct
+ * Date: 03/10/2020
+ * Description: IMU manager for getting IMU data from around the pod and push it to data struct
  *
- *    Copyright 2019 HYPED
+ *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -24,24 +24,21 @@
 #include <cstdint>
 
 #include "data/data.hpp"
-#include "utils/concurrent/thread.hpp"
-
 #include "sensors/interface.hpp"
+#include "utils/concurrent/thread.hpp"
 #include "utils/system.hpp"
 
 namespace hyped {
 
+using data::DataPoint;
 using utils::Logger;
 using utils::concurrent::Thread;
 
 namespace sensors {
 /**
- * @brief creates class to hold multiple IMUs and respective data.
- *
+ * @brief A class to operate several IMU sensors. Currently, it only handles a single IMU.
  */
 class ImuManager: public Thread {
-  typedef data::DataPoint<array<ImuData, data::Sensors::kNumImus>>  DataArray;
-
  public:
   /**
    * @brief Construct a new Imu Manager object
@@ -56,19 +53,19 @@ class ImuManager: public Thread {
   void run() override;
 
  private:
-  utils::System&   sys_;
-
-  /**
-   * @brief DataPoint array for all kNumImus
-   */
-  DataArray        sensors_imu_;
+  utils::System& sys_;
 
   /**
    * @brief needs to be references because run() passes directly to data struct
    */
-  data::Data&      data_;
+  data::Data& data_;
 
-  ImuInterface*     imu_[data::Sensors::kNumImus];
+  /**
+   * @brief DataPoint array for all kNumImus
+   */
+  DataPoint<ImuData> imu_datapoint_;
+
+  ImuInterface* imu_;
 };
 
 }}  // namespace hyped::sensors
