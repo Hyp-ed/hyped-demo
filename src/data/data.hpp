@@ -22,18 +22,14 @@
 
 #include <cstdint>
 #include <array>
-#include <vector>
-#include "utils/math/vector.hpp"
 #include "data/data_point.hpp"
 #include "utils/concurrent/lock.hpp"
 
 using std::array;
-using std::vector;
 
 namespace hyped {
 
 // imports
-using utils::math::Vector;
 using utils::concurrent::Lock;
 
 namespace data {
