@@ -1,8 +1,8 @@
 /*
  * Author: Uday Patel, Jack Horsburgh and Ragnor Comerford
  * Organisation: HYPED
- * Date: 28/05/18
- * Description: Main sensor interfaces, used to create fake sensors
+ * Date: 03/10/2020
+ * Description: Main sensor interfaces, used to create real and fake sensors
  *
  *    Copyright 2018 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,14 +22,12 @@
 #define SENSORS_INTERFACE_HPP_
 
 #include <string>
+
 #include "data/data.hpp"
 
 namespace hyped {
 
 using data::ImuData;
-using data::StripeCounter;
-using data::TemperatureData;
-using data::NavigationVector;
 using data::BatteryData;
 
 namespace sensors {
@@ -49,39 +47,7 @@ class ImuInterface: public SensorInterface {
    * @brief Get IMU data
    * @param imu - output pointer to be filled by this sensor
    */
-  virtual void getData(ImuData* imu) = 0;
-};
-
-class GpioInterface: public SensorInterface {
- public:
-  /**
-   * @brief Get GPIO data
-   * @param stripe_counter - output pointer
-   */
-  virtual void getData(StripeCounter* stripe_counter) = 0;
-};
-
-class BMSInterface: public SensorInterface {
- public:
-  /**
-   * @brief Get Battery data
-   * @param battery - output pointer to be filled by this sensor
-   */
-  virtual void getData(BatteryData* battery) = 0;
-};
-
-class TemperatureInterface {
- public:
-  /**
-   * @brief not a thread, checks temperature
-   */
-  virtual void run() = 0;
-
-  /**
-   * @brief returns int representation of temperature
-   * @return int temperature degrees C
-   */
-  virtual int getData() = 0;
+  virtual void getAccelerationX(ImuData* imu) = 0;
 };
 }}  // namespace hyped::sensors
 

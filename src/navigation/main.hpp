@@ -1,10 +1,10 @@
 /*
- * Author: Lukas Schaefer, Neil McBlane
+ * Author: Lukas Schaefer, Neil McBlane, Branislav Pilnan
  * Organisation: HYPED
- * Date: 05/04/2019
+ * Date: 04/10/2020
  * Description: Main file for navigation class.
  *
- *    Copyright 2019 HYPED
+ *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  *    except in compliance with the License. You may obtain a copy of the License at
  *
@@ -21,15 +21,11 @@
 #include "data/data.hpp"
 #include "navigation/navigation.hpp"
 #include "utils/concurrent/thread.hpp"
-#include "utils/system.hpp"
 #include "utils/logger.hpp"
+#include "utils/system.hpp"
 
 namespace hyped {
 
-using data::Data;
-using data::State;
-using hyped::data::StateMachine;
-using hyped::data::ModuleStatus;
 using utils::concurrent::Thread;
 using utils::System;
 using utils::Logger;
@@ -37,14 +33,14 @@ using utils::Logger;
 namespace navigation {
 
 class Main: public Thread {
-  public:
-    explicit Main(uint8_t id, Logger& log);
-    void run() override;
-    bool isCalibrated();
-  private:
-    Logger& log_;
-    System& sys_;
-    Navigation nav_;
+ public:
+  explicit Main(uint8_t id, Logger& log);
+  void run() override;
+
+ private:
+  Logger& log_;
+  System& sys_;
+  Navigation nav_;
 };
 
 }}  // namespace hyped::navigation

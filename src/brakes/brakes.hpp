@@ -1,10 +1,10 @@
 /*
-* Author: Kornelija Sukyte
+* Author: Kornelija Sukyte, Branislav Pilnan
 * Organisation: HYPED
-* Date:
+* Date: 04/10/2020
 * Description:
 *
-*    Copyright 2019 HYPED
+*    Copyright 2020 HYPED
 *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 *    except in compliance with the License. You may obtain a copy of the License at
 *
@@ -33,49 +33,31 @@ using utils::Logger;
 using utils::io::GPIO;
 using data::ModuleStatus;
 
-namespace embrakes {
+namespace brakes {
 
-class Stepper {
+class Brakes {
  public:
   /**
-   * @brief Construct a new Stepper object
+   * @brief Construct a new Brakes object
+   *
    * @param log, node id
    */
-  Stepper(uint8_t enable_pin, uint8_t button_pin, Logger& log, uint8_t id);
+  explicit Brakes(Logger& log);
 
   /**
-   * @brief {checks if brake's button is pressed, notes change in the data struct}
+   * @brief Ensures the brakes are engaged and updates the braking force
    */
-  void checkHome();
+  void engage();
 
   /**
-   * @brief sends retract message
+   * @brief Ensures the brakes are disengaged and updates the braking force
    */
-  void sendRetract();
-
-  /**
-   * @brief sends clamp message
-   */
-  void sendClamp();
-
-  /**
-   * @brief checks for brake failure during acceleration
-   */
-  void checkAccFailure();
-
-  void checkBrakingFailure();
-
-  bool checkClamped();
+  void disengage();
 
  private:
-  utils::Logger&        log_;
-  data::Data&           data_;
-  data::EmergencyBrakes em_brakes_data_;
-  GPIO                  command_pin_;
-  GPIO                  button_;
-  uint8_t               brake_id_;
-  uint8_t               is_clamped_;
-  uint64_t              timer;
+  utils::Logger& log_;
+  data::Data&    data_;
+  data::Brakes   brakes_data_;
 };
 
 }}  // namespace hyped::embrakes
