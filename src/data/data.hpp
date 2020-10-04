@@ -104,8 +104,8 @@ struct Batteries : public Module {
   array<BatteryData, kNumHPBatteries> high_power_batteries;
 };
 
-struct EmergencyBrakes : public Module {
-  bool brakes_retracted[4] = {false};       // true if brakes retract
+struct Brakes : public Module {
+  bool engaged = false;
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -220,14 +220,14 @@ class Data {
   void setBatteriesData(const Batteries& batteries_data);
 
   /**
-   * @brief      Retrieves data from the emergency brakes.
+   * @brief      Retrieves data from the brakes.
    */
-  EmergencyBrakes getEmergencyBrakesData();
+  Brakes getBrakesData();
 
   /**
-   * @brief      Should be called to update emergency brakes data
+   * @brief      Should be called to update brakes data
    */
-  void setEmergencyBrakesData(const EmergencyBrakes& emergency_brakes_data);
+  void setBrakesData(const Brakes& brakes_data);
 
   /**
    * @brief      Retrieves data produced by each of the four motors.
@@ -256,7 +256,7 @@ class Data {
   Motors motors_;
   Batteries batteries_;
   Telemetry telemetry_;
-  EmergencyBrakes emergency_brakes_;
+  Brakes brakes_;
 
 
   // locks for data substructures
@@ -267,7 +267,7 @@ class Data {
 
   Lock lock_telemetry_;
   Lock lock_batteries_;
-  Lock lock_emergency_brakes_;
+  Lock lock_brakes_;
 
   Data() {}
 
