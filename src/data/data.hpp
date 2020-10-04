@@ -56,12 +56,10 @@ struct Module {
 // Navigation
 // -------------------------------------------------------------------------------------------------
 typedef float NavigationType;
-typedef Vector<NavigationType, 3> NavigationVector;
 struct Navigation : public Module {
   NavigationType  distance;  // m
   NavigationType  velocity;  // m/s
   NavigationType  acceleration;  // m/s^2
-  NavigationType emergency_braking_distance;
   NavigationType  braking_distance = 750;  // m
 };
 
