@@ -29,6 +29,7 @@ namespace sensors {
 
 Imu::Imu(Logger& log)
     : log_(log),
+    data_(Data::getInstance()),
     is_online_(true)
 {
   log_.INFO("Imu", "Created an IMU sensor");
@@ -41,9 +42,14 @@ bool Imu::isOnline()
 
 void Imu::getAccelerationX(ImuData* data)
 {
-  // TODO(Brano): get current force from motors and brakes
-  // TODO(Brano): get pod mass
-  // TODO(Brano): calculate acceleration and update data
+  data::StateMachine sm_data = data_.getStateMachineData();
+  if (sm_data.current_state == data::State::kAccelerating)
+    data->acc_x = 10;
+  else if (sm_data.current_state == data::State::kNominalBraking ||
+           sm_data.current_state == data::State::kEmergencyBraking)
+    data->acc_x = -10;
+  else
+    data->acc_x = 0;
 }
 
 namespace {

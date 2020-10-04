@@ -29,6 +29,7 @@
 namespace hyped {
 
 using utils::Logger;
+using data::Data;
 
 namespace sensors {
 
@@ -51,13 +52,14 @@ class Imu : public ImuInterface {
   /*
    *  @brief Get the forward acceleration and update the pointer
    *
-   * This simplified version only calculates what the accelaration _should_ be based on the mass of
-   * the pod and the forces from motors and brakes.
+   * This simplified version just returns some constants based on whether the pod is currently
+   * accelerating or decelerating.
    */
   void getAccelerationX(ImuData* data) override;
 
  private:
   Logger& log_;
+  Data&   data_;
   bool    is_online_;
 };
 
