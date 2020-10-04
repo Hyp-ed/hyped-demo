@@ -1,10 +1,10 @@
 /*
- * Author: Gregor Konzett
+ * Author: Gregor Konzett, Branislav Pilnan
  * Organisation: HYPED
- * Date: 1.4.2019
- * Description: Main entrypoint to motor control module
+ * Date: 04/10/2020
+ * Description: Main entrypoint to a demo motor control module
  *
- *    Copyright 2019 HYPED
+ *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  *    except in compliance with the License. You may obtain a copy of the License at
  *
@@ -19,49 +19,35 @@
 #ifndef PROPULSION_MAIN_HPP_
 #define PROPULSION_MAIN_HPP_
 
-#include "utils/concurrent/thread.hpp"
-#include "utils/concurrent/barrier.hpp"
-#include "utils/system.hpp"
-#include "utils/timer.hpp"
-#include "utils/logger.hpp"
-// #include "propulsion/can/can_sender.hpp"
 #include "data/data.hpp"
-
 #include "state_processor.hpp"
+#include "utils/concurrent/thread.hpp"
+#include "utils/logger.hpp"
 
 namespace hyped
 {
 using data::Data;
 using data::State;
-using data::ModuleStatus;
-using data::Motors;
-using data::Telemetry;
-using utils::Logger;
-using utils::System;
 using utils::concurrent::Thread;
+using utils::Logger;
 
 namespace motor_control
 {
 
-constexpr int32_t kNumMotors = 4;
-
 class Main : public Thread
 {
-    public:
-        Main(uint8_t id, Logger &log);
+ public:
+    Main(uint8_t id, Logger &log);
 
-    /**
-     * @brief {This function is the entrypoint to the propulsion module and reacts to the certain states}
-    * */
-    void run() override;
+  /*
+   * @brief This function is the entrypoint to the propulsion module and reacts to certain states
+   */
+  void run() override;
 
-  private:
-    bool is_running_;
-    Logger &log_;
-    StateProcessor *state_processor_;
-    State current_state_;
-    State previous_state_;
-    Data& data_;
+ private:
+  Logger &log_;
+  StateProcessor *state_processor_;
+  Data& data_;
 };
 
 }  // namespace motor_control

@@ -1,10 +1,10 @@
 /*
- * Author: Gregor Konzett
+ * Author: Gregor Konzett, Branislav Pilnan
  * Organisation: HYPED
- * Date: 1.4.2019
- * Description: Main entrypoint to motor control module
+ * Date: 04/10/2020
+ * Description: Main entrypoint to a demo motor control module
  *
- *    Copyright 2019 HYPED
+ *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  *    except in compliance with the License. You may obtain a copy of the License at
  *
@@ -21,18 +21,16 @@
 namespace hyped
 {
 
+using data::ModuleStatus;
+
 namespace motor_control
 {
 Main::Main(uint8_t id, Logger &log)
   : Thread(id, log),
-    is_running_(true),
     log_(log),
-    state_processor_(new StateProcessor(Motors::kNumMotors, log)),
+    state_processor_(new StateProcessor(data::Motors::kNumMotors, log)),
     data_(Data::getInstance())
 {
-  // Initialise states
-  current_state_ = data_.getStateMachineData().current_state;
-  previous_state_ = State::kInvalid;
 }
 
 void Main::run()
@@ -41,111 +39,48 @@ void Main::run()
 
   System &sys = System::getSystem();
 
-  Motors motor_data = data_.getMotorData();
+  data::Motors motor_data = data_.getMotorData();
 
-  while (is_running_ && sys.running_) {
+  bool is_running = true;
+  while (is_running && sys.running_) {
     // Get the current state of the system from the state machine's data
-    current_state_ = data_.getStateMachineData().current_state;
+    data::State current_state = data_.getStateMachineData().current_state;
 
-    if (current_state_ == State::kIdle) {  // Initialize motors
-      if (current_state_ != previous_state_) {
-        log_.INFO("Motor", "State idle");
-        previous_state_ = current_state_;
-      }
+    if (current_state == State::kIdle) {  // Initialize motors
       if (motor_data.module_status != ModuleStatus::kInit) {
         motor_data.module_status = ModuleStatus::kInit;
         data_.setMotorData(motor_data);
+        state_processor_->initMotors();
       }
-    } else if (current_state_ == State::kCalibrating) {
-        // Calculate slip values
-        if (previous_state_ != current_state_) {
-          log_.INFO("Motor", "State Calibrating");
-          previous_state_ = current_state_;
-        }
-        if (!state_processor_->isInitialized()) {
-          state_processor_->initMotors();
-          if (state_processor_->isCriticalFailure()) {
-            motor_data.module_status = ModuleStatus::kCriticalFailure;
-            data_.setMotorData(motor_data);
-            is_running_ = false;
-          }
-        }
-        if (state_processor_->isInitialized() && motor_data.module_status != ModuleStatus::kReady) {
-          motor_data.module_status = ModuleStatus::kReady;
-          data_.setMotorData(motor_data);
-        }
-    } else if (current_state_ == State::kReady) {
-          // Standby and wait
-          if (previous_state_ != current_state_) {
-            log_.INFO("Motor", "State Ready");
-            previous_state_ = current_state_;
-            state_processor_->sendOperationalCommand();
-          }
-    } else if (current_state_ == State::kAccelerating) {
-          // Accelerate the motors
-          if (previous_state_ != current_state_) {
-            log_.INFO("Motor", "State Accelerating");
-            previous_state_ = current_state_;
-          }
-          state_processor_->accelerate();
-    } else if (current_state_ == State::kNominalBraking) {
-          // Stop all motors
-          if (previous_state_ != current_state_) {
-            log_.INFO("Motor", "State NominalBraking");
-            previous_state_ = current_state_;
-          }
-          state_processor_->quickStopAll();
-    } else if (current_state_ == State::kEmergencyBraking) {
-          // Stop all motors
-          if (previous_state_ != current_state_) {
-            log_.INFO("Motor", "State EmergencyBraking");
-            previous_state_ = current_state_;
-          }
-          state_processor_->quickStopAll();
-    } else if (current_state_ == State::kExiting) {
-          // Move very slowly out of tube
-          if (previous_state_ != current_state_) {
-            log_.INFO("Motor", "State Exiting");
-            previous_state_ = current_state_;
-          }
-          Telemetry telem = data_.getTelemetryData();
-          if (telem.service_propulsion_go) {
-            state_processor_->servicePropulsion();
-            log_.DBG1("MOTOR", "Service propulsion active");
-          } else {
-            state_processor_->quickStopAll();
-          }
-    } else if (current_state_ == State::kFailureStopped) {
-          // Enter preoperational
-          if (previous_state_ != current_state_) {
-            log_.INFO("Motor", "State FailureStopped");
-            previous_state_ = current_state_;
-          }
-          state_processor_->enterPreOperational();
-    } else if (current_state_ == State::kFinished) {
-          if (previous_state_ != current_state_) {
-            log_.INFO("Motor", "State Finished");
-            previous_state_ = current_state_;
-          }
-          state_processor_->enterPreOperational();
-    } else if (current_state_ == State::kRunComplete) {
-          // Run complete
-          if (previous_state_ != current_state_) {
-            log_.INFO("Motor", "State RunComplete");
-            previous_state_ = current_state_;
-          }
-          state_processor_->quickStopAll();
+    } else if (current_state == State::kCalibrating) {
+      if (state_processor_->isInitialized() && motor_data.module_status != ModuleStatus::kReady) {
+        motor_data.module_status = ModuleStatus::kReady;
+        data_.setMotorData(motor_data);
+      }
+    } else if (current_state == State::kReady) {
+      // Standby and wait
+    } else if (current_state == State::kAccelerating) {
+      // Accelerate the motors
+      state_processor_->accelerate();
+    } else if (current_state == State::kNominalBraking ||
+               current_state == State::kEmergencyBraking) {
+      // Stop all motors
+      state_processor_->quickStopAll();
+    } else if (current_state == State::kExiting) {
+      // Move very slowly out of tube
+    } else if (current_state == State::kFailureStopped) {
+      // Enter preoperational
+    } else if (current_state == State::kFinished) {
+    } else if (current_state == State::kRunComplete) {
+      // Run complete
+      state_processor_->quickStopAll();
     } else {
-          // Unknown State
-          if (previous_state_ != current_state_) {
-            log_.INFO("Motor", "State Unknown");
-            previous_state_ = current_state_;
-          }
-          is_running_ = false;
-          log_.ERR("Motor", "Unknown state");
-          motor_data.module_status = ModuleStatus::kCriticalFailure;
-          data_.setMotorData(motor_data);
-          state_processor_->quickStopAll();
+      // Unknown State
+      is_running = false;
+      log_.ERR("Motor", "Unknown state");
+      motor_data.module_status = ModuleStatus::kCriticalFailure;
+      data_.setMotorData(motor_data);
+      state_processor_->quickStopAll();
     }
     sleep(1);
   }
