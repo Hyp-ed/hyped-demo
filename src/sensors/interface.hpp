@@ -28,7 +28,6 @@
 namespace hyped {
 
 using data::ImuData;
-using data::NavigationVector;
 using data::BatteryData;
 
 namespace sensors {
