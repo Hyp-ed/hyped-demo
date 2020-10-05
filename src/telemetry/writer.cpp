@@ -161,7 +161,7 @@ const char* Writer::convertStateMachineState(data::State state)
     case data::State::kFailureStopped:
       return "FAILURE_STOPPED";
     case data::State::kIdle:
-      return "IDLE";
+      return "READY";
     case data::State::kCalibrating:
       return "CALIBRATING";
     case data::State::kRunComplete:
