@@ -28,7 +28,7 @@ Main::Main(uint8_t id, Logger& log)
   : Thread(id, log),
     sys_(utils::System::getSystem()),
     data_(data::Data::getInstance()),
-	sm_data_(data_.getStateMachineData())
+    sm_data_(data_.getStateMachineData())
 {}
 
 /**
@@ -39,23 +39,23 @@ void Main::run()
 {
   utils::System& sys = utils::System::getSystem();
 
-	current_state_ = new State(log_, this); // pointer to current state object
+  current_state_ = new State(log_, this); // pointer to current state object
 
   idle_ = new Idle(log_, this); // constructing state object for Idle
   accelerating_ = new Accelerating(log_, this); // constructing state object for Accelerating
   nominal_braking_ = new NominalBraking(log_, this); // constructing state object for Nominal braking
   finished_ = new Finished(log_, this); // constructing state object for Finished
 
-	current_state_ = idle_; // set current state to point to Idle
+  current_state_ = idle_; // set current state to point to Idle
 
-	sm_data_.current_state = data::State::kIdle; // s et current state in data structure
+  sm_data_.current_state = data::State::kIdle; // s et current state in data structure
 
   while (sys.running_) {
 
-		current_state_->checkEmergencyStop();
-		current_state_->TransitionCheck();
+    current_state_->checkEmergencyStop();
+    current_state_->TransitionCheck();
 
-	}
+  }
 }
 
 }  // namespace state_machine

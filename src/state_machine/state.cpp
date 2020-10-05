@@ -27,7 +27,7 @@ namespace state_machine {
 State::State(Logger& log, Main* state_machine)
   : log_(log),
     data_(data::Data::getInstance()),
-	telemetry_data_(data_.getTelemetryData()),
+    telemetry_data_(data_.getTelemetryData()),
     nav_data_(data_.getNavigationData()),
     sm_data_(data_.getStateMachineData()),
     motor_data_(data_.getMotorData()),
@@ -43,8 +43,8 @@ void State::checkEmergencyStop()
     telemetry_data_.emergency_stop_command = false;
     data_.setTelemetryData(telemetry_data_);
 
-	  sm_data_.current_state = data::State::kFinished;
-	  data_.setStateMachineData(sm_data_);
+    sm_data_.current_state = data::State::kFinished;
+    data_.setStateMachineData(sm_data_);
 
     state_machine_->current_state_ = state_machine_->finished_;
 
@@ -61,9 +61,9 @@ void Idle::TransitionCheck()
     data_.setTelemetryData(telemetry_data_);
 
     sm_data_.current_state = data::State::kAccelerating;
-		data_.setStateMachineData(sm_data_);
+    data_.setStateMachineData(sm_data_);
 
-		state_machine_->current_state_ = state_machine_->accelerating_;
+    state_machine_->current_state_ = state_machine_->accelerating_;
 
   }
 }
@@ -75,12 +75,12 @@ void Accelerating::TransitionCheck()
     if (nav_data_.distance +
       nav_data_.braking_distance +
       20 >= data::Telemetry::run_length) {
-    	log_.INFO("STATE", "max distance reached");
-    	log_.INFO("STATE", "current distance, braking distance: %f %f"
+      log_.INFO("STATE", "max distance reached");
+      log_.INFO("STATE", "current distance, braking distance: %f %f"
       , nav_data_.distance, nav_data_.braking_distance);
 
-    	sm_data_.current_state = data::State::kNominalBraking;
-			data_.setStateMachineData(sm_data_);
+      sm_data_.current_state = data::State::kNominalBraking;
+      data_.setStateMachineData(sm_data_);
 
       state_machine_->current_state_ = state_machine_->nominal_braking_;
   }
@@ -95,7 +95,7 @@ void NominalBraking::TransitionCheck()
     log_.INFO("STATE", "Acceleration reached zero.");
 
     sm_data_.current_state = data::State::kFinished;
-		data_.setStateMachineData(sm_data_);
+    data_.setStateMachineData(sm_data_);
 
     state_machine_->current_state_ = state_machine_->finished_;
   }
@@ -111,7 +111,7 @@ void Finished::TransitionCheck()
     data_.setTelemetryData(telemetry_data_);
 
     sm_data_.current_state = data::State::kIdle;
-		data_.setStateMachineData(sm_data_);
+    data_.setStateMachineData(sm_data_);
 
     state_machine_->current_state_ = state_machine_->idle_;
   }

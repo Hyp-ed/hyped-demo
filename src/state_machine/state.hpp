@@ -41,8 +41,6 @@ class State {
  public:
   State(Logger& log, Main* state_machine);
 
-//   void checkCriticalFailure();
-
   void checkEmergencyStop();
 
   void TransitionCheck();
@@ -75,8 +73,6 @@ class Accelerating : public State {
 
  public:
   Accelerating(Logger& log, Main* state_machine) : State(log, state_machine){}
-
-//   void checkCriticalFailure();
 
   void TransitionCheck(); // Check if max distance reached
 
