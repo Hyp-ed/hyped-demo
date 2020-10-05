@@ -27,45 +27,14 @@ namespace state_machine {
 State::State(Logger& log, Main* state_machine)
   : log_(log),
     data_(data::Data::getInstance()),
-	  telemetry_data_(data_.getTelemetryData()),
+	telemetry_data_(data_.getTelemetryData()),
     nav_data_(data_.getNavigationData()),
     sm_data_(data_.getStateMachineData()),
     motor_data_(data_.getMotorData()),
     sensors_data_(data_.getSensorsData()),
-    emergency_brakes_data_(data_.getEmergencyBrakesData()),
+    brakes_data_(data_.getBrakesData()),
     state_machine_(state_machine)
 {}
-
-    // void State::checkCriticalFailure()
-    // {
-    // bool criticalFailureFound = false;
-
-    // if (telemetry_data_.module_status == ModuleStatus::kCriticalFailure) {
-    //     log_.ERR("STATE", "Critical failure caused by telemetry ");
-    //     criticalFailureFound = true;
-    // }
-    // if (nav_data_.module_status == ModuleStatus::kCriticalFailure) {
-    //     log_.ERR("STATE", "Critical failure caused by navigation ");
-    //     criticalFailureFound = true;
-    // }
-    // if (motor_data_.module_status == ModuleStatus::kCriticalFailure) {
-    //     log_.ERR("STATE", "Critical failure caused by motors ");
-    //     criticalFailureFound = true;
-    // }
-    // if (emergency_brakes_data_.module_status == ModuleStatus::kCriticalFailure) {
-    //     log_.ERR("STATE", "Critical failure caused by emergency brakes ");
-    //     criticalFailureFound = true;
-    // }
-    //     if (sensors_data_.module_status == ModuleStatus::kCriticalFailure) {
-    //         log_.ERR("SATE", "Critical failure caused by sensors");
-    //         criticalFailureFound = true;
-    //     }
-
-    // if (criticalFailureFound) {
-    //     sm_data_.current_state = data::State::kFailureStopped;
-    //         data_.setStateMachineData(sm_data_);
-    // }
-    // }
 
 void State::checkEmergencyStop()
 {
@@ -74,12 +43,15 @@ void State::checkEmergencyStop()
     telemetry_data_.emergency_stop_command = false;
     data_.setTelemetryData(telemetry_data_);
 
-		sm_data_.current_state = data::State::kFinished;
-		data_.setStateMachineData(sm_data_);
+	  sm_data_.current_state = data::State::kFinished;
+	  data_.setStateMachineData(sm_data_);
+
+    state_machine_->current_state_ = state_machine_->finished_;
+
   }
 }
 
-// Idle
+// Idle state
 
 void Idle::TransitionCheck()
 {
@@ -91,57 +63,12 @@ void Idle::TransitionCheck()
     sm_data_.current_state = data::State::kAccelerating;
 		data_.setStateMachineData(sm_data_);
 
-		state_machine_->current_state_ = &(state_machine_->accelerating_);
-    // Setup timer for acceleration time out (?)
-    // Potential exercise (?)
-    // time_start_ = utils::Timer::getTimeMicros();
+		state_machine_->current_state_ = state_machine_->accelerating_;
+
   }
 }
 
 // Accelerating state
-
-// void Accelerating::checkCriticalFailure()
-// {
-//   bool criticalFailureFound = false;
-
-//   if (telemetry_data_.module_status == ModuleStatus::kCriticalFailure) {
-//     log_.ERR("STATE", "Critical failure caused by telemetry ");
-//     criticalFailureFound = true;
-//   }
-//   if (nav_data_.module_status == ModuleStatus::kCriticalFailure) {
-//     log_.ERR("STATE", "Critical failure caused by navigation ");
-//     criticalFailureFound = true;
-//   }
-//   if (motor_data_.module_status == ModuleStatus::kCriticalFailure) {
-//     log_.ERR("STATE", "Critical failure caused by motors ");
-//     criticalFailureFound = true;
-//   }
-//   if (emergency_brakes_data_.module_status == ModuleStatus::kCriticalFailure) {
-//     log_.ERR("STATE", "Critical failure caused by emergency brakes ");
-//     criticalFailureFound = true;
-//   }
-// 	if (sensors_data_.module_status == ModuleStatus::kCriticalFailure) {
-// 		log_.ERR("SATE", "Critical failure caused by sensors");
-// 		criticalFailureFound = true;
-// 	}
-
-//   if (criticalFailureFound) {
-//     sm_data_.current_state = data::State::kEmergencyBraking;
-// 		data_.setStateMachineData(sm_data_);
-//   }
-// }
-
-void Accelerating::checkEmergencyStop()
-{
-  if (telemetry_data_.emergency_stop_command) {
-    log_.ERR("STATE", "STOP command received");
-    telemetry_data_.emergency_stop_command = false;
-    data_.setTelemetryData(telemetry_data_);
-
-		sm_data_.current_state = data::State::kNominalBraking;
-		data_.setStateMachineData(sm_data_);
-  }
-}
 
 void Accelerating::TransitionCheck()
 {
@@ -154,64 +81,27 @@ void Accelerating::TransitionCheck()
 
     	sm_data_.current_state = data::State::kNominalBraking;
 			data_.setStateMachineData(sm_data_);
+
+      state_machine_->current_state_ = state_machine_->nominal_braking_;
   }
 }
 
 // Nominal braking state
 
-// void Nominal_Braking::checkCriticalFailure()
-// {
-//   bool criticalFailureFound = false;
-
-//   if (telemetry_data_.module_status == ModuleStatus::kCriticalFailure) {
-//     log_.ERR("STATE", "Critical failure caused by telemetry ");
-//     criticalFailureFound = true;
-//   }
-//   if (nav_data_.module_status == ModuleStatus::kCriticalFailure) {
-//     log_.ERR("STATE", "Critical failure caused by navigation ");
-//     criticalFailureFound = true;
-//   }
-//   if (motor_data_.module_status == ModuleStatus::kCriticalFailure) {
-//     log_.ERR("STATE", "Critical failure caused by motors ");
-//     criticalFailureFound = true;
-//   }
-//   if (emergency_brakes_data_.module_status == ModuleStatus::kCriticalFailure) {
-//     log_.ERR("STATE", "Critical failure caused by emergency brakes ");
-//     criticalFailureFound = true;
-//   }
-// 	if (sensors_data_.module_status == ModuleStatus::kCriticalFailure) {
-// 		log_.ERR("SATE", "Critical failure caused by sensors");
-// 		criticalFailureFound = true;
-// 	}
-
-//   if (criticalFailureFound) {
-//     sm_data_.current_state = data::State::kEmergencyBraking;
-// 		data_.setStateMachineData(sm_data_);
-//   }
-// }
-
-void Nominal_Braking::checkEmergencyStop()
-{
-  if (telemetry_data_.emergency_stop_command) {
-    log_.ERR("STATE", "STOP command received");
-    telemetry_data_.emergency_stop_command = false;
-    data_.setTelemetryData(telemetry_data_);
-
-		sm_data_.current_state = data::State::kEmergencyBraking;
-		data_.setStateMachineData(sm_data_);
-  }
-}
-
-void Nominal_Braking::TransitionCheck()
+void NominalBraking::TransitionCheck()
 {
   if (nav_data_.acceleration >= -0.1 && nav_data_.acceleration <= 0.1
-    && !emergency_brakes_data_.brakes_retracted) {
+    && brakes_data_.engaged) {
     log_.INFO("STATE", "Acceleration reached zero.");
 
     sm_data_.current_state = data::State::kFinished;
 		data_.setStateMachineData(sm_data_);
+
+    state_machine_->current_state_ = state_machine_->finished_;
   }
 }
+
+// Finished state
 
 void Finished::TransitionCheck()
 {
@@ -222,6 +112,8 @@ void Finished::TransitionCheck()
 
     sm_data_.current_state = data::State::kIdle;
 		data_.setStateMachineData(sm_data_);
+
+    state_machine_->current_state_ = state_machine_->idle_;
   }
 }
 

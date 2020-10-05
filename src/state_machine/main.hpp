@@ -45,10 +45,10 @@ class Main: public Thread {
   void run() override;
 
   State                 *current_state_;
-  Idle                  idle_;
-  Accelerating          accelerating_;
-  Nominal_Braking       nominal_braking_;
-  Finished              finished_;
+  Idle                  *idle_;
+  Accelerating          *accelerating_;
+  NominalBraking        *nominal_braking_;
+  Finished              *finished_;
 
  private:
   utils::System&        sys_;

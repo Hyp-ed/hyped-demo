@@ -55,7 +55,7 @@ class State {
   data::StateMachine    sm_data_;
   data::Motors          motor_data_;
   data::Sensors         sensors_data_;
-  data::EmergencyBrakes emergency_brakes_data_;
+  data::Brakes          brakes_data_;
 
  protected:
   Main* state_machine_;
@@ -78,20 +78,14 @@ class Accelerating : public State {
 
 //   void checkCriticalFailure();
 
-  void checkEmergencyStop();
-
   void TransitionCheck(); // Check if max distance reached
 
 };
 
-class Nominal_Braking : public State {
+class NominalBraking : public State {
 
  public:
-  Nominal_Braking(Logger& log, Main* state_machine) : State(log, state_machine){}
-
-//   void checkCriticalFailure();
-
-  void checkEmergencyStop();
+  NominalBraking(Logger& log, Main* state_machine) : State(log, state_machine){}
 
   void TransitionCheck(); // check if pod is at rest
 
