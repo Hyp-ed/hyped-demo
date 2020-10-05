@@ -45,17 +45,10 @@ void Main::run()
 
   current_state_ = idle_; // set current state to point to Idle
 
+  sm_data_        = data_.getStateMachineData();
   sm_data_.current_state = data::State::kIdle; // s et current state in data structure
 
   while (sys.running_) {
-
-    telemetry_data_ = data_.getTelemetryData();
-    nav_data_       = data_.getNavigationData();
-    sm_data_        = data_.getStateMachineData();
-    motor_data_     = data_.getMotorData();
-    batteries_data_ = data_.getBatteriesData();
-    sensors_data_   = data_.getSensorsData();
-    brakes_data_    = data_.getBrakesData();
 
     current_state_->checkEmergencyStop();
     current_state_->TransitionCheck();

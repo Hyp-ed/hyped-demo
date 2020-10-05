@@ -26,18 +26,14 @@ namespace state_machine {
 
 State::State(Logger& log, Main* state_machine)
   : log_(log),
-    data_(data::Data::getInstance()),
-    telemetry_data_(data_.getTelemetryData()),
-    nav_data_(data_.getNavigationData()),
-    sm_data_(data_.getStateMachineData()),
-    motor_data_(data_.getMotorData()),
-    sensors_data_(data_.getSensorsData()),
-    brakes_data_(data_.getBrakesData()),
-    state_machine_(state_machine)
+    data_(data::Data::getInstance())
 {}
 
 void State::checkEmergencyStop()
 {
+  telemetry_data_ = data_.getTelemetryData();
+  sm_data_        = data_.getStateMachineData();
+
   if (telemetry_data_.emergency_stop_command) {
     log_.ERR("STATE", "STOP command received");
     telemetry_data_.emergency_stop_command = false;
@@ -55,6 +51,9 @@ void State::checkEmergencyStop()
 
 void Idle::TransitionCheck()
 {
+  telemetry_data_ = data_.getTelemetryData();
+  sm_data_        = data_.getStateMachineData();
+
   if (telemetry_data_.launch_command) {
     log_.INFO("STATE", "launch command received");
     telemetry_data_.launch_command = false;
@@ -72,17 +71,21 @@ void Idle::TransitionCheck()
 
 void Accelerating::TransitionCheck()
 {
-    if (nav_data_.distance +
-      nav_data_.braking_distance +
-      20 >= data::Telemetry::run_length) {
-      log_.INFO("STATE", "max distance reached");
-      log_.INFO("STATE", "current distance, braking distance: %f %f"
-      , nav_data_.distance, nav_data_.braking_distance);
+  nav_data_       = data_.getNavigationData();
+  sm_data_        = data_.getStateMachineData();
+  telemetry_data_ = data_.getTelemetryData();
 
-      sm_data_.current_state = data::State::kNominalBraking;
-      data_.setStateMachineData(sm_data_);
+  if (nav_data_.distance +
+    nav_data_.braking_distance +
+    20 >= telemetry_data_.run_length) {
+    log_.INFO("STATE", "max distance reached");
+    log_.INFO("STATE", "current distance, braking distance: %f %f"
+    , nav_data_.distance, nav_data_.braking_distance);
 
-      state_machine_->current_state_ = state_machine_->nominal_braking_;
+    sm_data_.current_state = data::State::kNominalBraking;
+    data_.setStateMachineData(sm_data_);
+
+    state_machine_->current_state_ = state_machine_->nominal_braking_;
   }
 }
 
@@ -90,6 +93,10 @@ void Accelerating::TransitionCheck()
 
 void NominalBraking::TransitionCheck()
 {
+  nav_data_       = data_.getNavigationData();
+  brakes_data_    = data_.getBrakesData();
+  sm_data_        = data_.getStateMachineData();
+
   if (nav_data_.acceleration >= -0.1 && nav_data_.acceleration <= 0.1
     && brakes_data_.engaged) {
     log_.INFO("STATE", "Acceleration reached zero.");
@@ -105,6 +112,9 @@ void NominalBraking::TransitionCheck()
 
 void Finished::TransitionCheck()
 {
+  telemetry_data_ = data_.getTelemetryData();
+  sm_data_        = data_.getStateMachineData();
+
   if (telemetry_data_.reset_command) {
     log_.INFO("STATE", "reset command received");
     telemetry_data_.reset_command = false;  // reset the command to false
