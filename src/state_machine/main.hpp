@@ -39,6 +39,11 @@ using data::ModuleStatus;
 
 namespace state_machine {
 
+class State;
+class Idle;
+class Accelerating;
+class NominalBraking;
+class Finished;
 class Main: public Thread {
  public:
   explicit Main(uint8_t id, Logger& log);

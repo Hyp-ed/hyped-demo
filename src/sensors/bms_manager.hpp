@@ -34,7 +34,7 @@ using std::array;
 
 namespace hyped {
 
-using data::BatteryData;
+using data::Data;
 using utils::Logger;
 using utils::concurrent::Thread;
 
@@ -53,7 +53,7 @@ class BmsManager: public Thread  {
 
   array<BMSInterface*, data::Batteries::kNumBatteries> bms_;
   utils::System&                                       sys_;
-  data::Data&                                          data_;
+  Data&                                                data_;
 
   /**
    * @brief holds BatteryData and module_status

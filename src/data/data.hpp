@@ -71,6 +71,7 @@ struct ImuData : public SensorData {
 };
 
 struct Sensors : public Module {
+  static constexpr int kNumImus = 1;
   DataPoint<ImuData> imu;
 };
 

@@ -114,14 +114,14 @@ void Config::parseSensors(char* line)
     }
   }
 
-  if (strcmp(token, "HPShutoff") == 0) {
-    for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-      char* value = strtok(NULL, ",");
-      if (value) {
-        sensors.hp_shutoff.push_back(atoi(value));
-      }
-    }
-  }
+  // if (strcmp(token, "HPShutoff") == 0) {
+  //   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
+  //     char* value = strtok(NULL, ",");
+  //     if (value) {
+  //       sensors.hp_shutoff.push_back(atoi(value));
+  //     }
+  //   }
+  // }
 
   if (strcmp(token, "CheckTime") == 0) {
     char* value = strtok(NULL, " ");

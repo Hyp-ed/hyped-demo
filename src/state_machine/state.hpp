@@ -36,6 +36,8 @@ using data::ModuleStatus;
 
 namespace state_machine {
 
+class Main;  // Forward declaration
+
 class State {
 
  public:
@@ -43,7 +45,7 @@ class State {
 
   void checkEmergencyStop();
 
-  void TransitionCheck();
+  virtual void TransitionCheck() = 0;
 
   Logger&               log_;
   data::Data&           data_;

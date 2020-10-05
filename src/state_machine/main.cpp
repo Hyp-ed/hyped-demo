@@ -39,8 +39,6 @@ void Main::run()
 {
   utils::System& sys = utils::System::getSystem();
 
-  current_state_ = new State(log_, this); // pointer to current state object
-
   idle_ = new Idle(log_, this); // constructing state object for Idle
   accelerating_ = new Accelerating(log_, this); // constructing state object for Accelerating
   nominal_braking_ = new NominalBraking(log_, this); // constructing state object for Nominal braking

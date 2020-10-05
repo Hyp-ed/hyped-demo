@@ -28,7 +28,7 @@
 #include "navigation/main.hpp"
 #include "sensors/main.hpp"
 #include "propulsion/main.hpp"
-#include "embrakes/main.hpp"
+#include "brakes/main.hpp"
 #include "state_machine/main.hpp"
 #include "telemetry/main.hpp"
 #include "utils/concurrent/thread.hpp"
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 
   // Initalise the threads here
   Thread* sensors = new hyped::sensors::Main(0, log_sensor);
-  Thread* embrakes = new hyped::embrakes::Main(1, log_embrakes);
+  Thread* embrakes = new hyped::brakes::Main(1, log_embrakes);
   Thread* motors = new hyped::motor_control::Main(2, log_motor);
   Thread* state_machine = new hyped::state_machine::Main(4, log_state);
   Thread* nav     = new hyped::navigation::Main(5, log_nav);
