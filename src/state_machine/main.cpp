@@ -27,8 +27,7 @@ namespace state_machine {
 Main::Main(uint8_t id, Logger& log)
   : Thread(id, log),
     sys_(utils::System::getSystem()),
-    data_(data::Data::getInstance()),
-    sm_data_(data_.getStateMachineData())
+    data_(data::Data::getInstance())
 {}
 
 /**
@@ -49,6 +48,14 @@ void Main::run()
   sm_data_.current_state = data::State::kIdle; // s et current state in data structure
 
   while (sys.running_) {
+
+    telemetry_data_ = data_.getTelemetryData();
+    nav_data_       = data_.getNavigationData();
+    sm_data_        = data_.getStateMachineData();
+    motor_data_     = data_.getMotorData();
+    batteries_data_ = data_.getBatteriesData();
+    sensors_data_   = data_.getSensorsData();
+    brakes_data_    = data_.getBrakesData();
 
     current_state_->checkEmergencyStop();
     current_state_->TransitionCheck();
