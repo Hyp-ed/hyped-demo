@@ -54,6 +54,9 @@ void Main::run()
     current_state_->TransitionCheck();
 
   }
+
+  sm_data_        = data_.getStateMachineData();
+  log_.INFO("STM", "Exiting. Current state: %s", data::states[sm_data_.current_state]);
 }
 
 }  // namespace state_machine

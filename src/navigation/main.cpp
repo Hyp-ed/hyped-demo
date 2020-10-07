@@ -58,9 +58,13 @@ void Main::run()
         break;
       default :
         navigation_complete = true;
+        log_.INFO("NAV", "Navigation complete");
         break;
     }
+    Thread::yield();
   }
+
+  log_.INFO("NAV", "Thread shutting down");
 }
 
 }}  // namespace hyped::navigation

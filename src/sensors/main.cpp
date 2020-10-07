@@ -41,7 +41,7 @@ Main::Main(uint8_t id, utils::Logger& log)
   sensors_ = data_.getSensorsData();
   sensors_.module_status = data::ModuleStatus::kInit;
   data_.setSensorsData(sensors_);
-  log_.INFO("Sensors", "Sensors have been initialised");
+  log_.INFO("SNS", "Sensors have been initialised");
 }
 
 void Main::run()
@@ -57,5 +57,7 @@ void Main::run()
 
   imu_manager_->join();
   battery_manager_->join();
+  log_.INFO("SNS", "Main thread shutting down");
 }
-}}
+
+}}  // namespace hyped::sensors

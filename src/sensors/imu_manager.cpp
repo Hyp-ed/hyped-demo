@@ -59,5 +59,8 @@ void ImuManager::run()
   // Add delay to simulate slow I/O
     std::this_thread::sleep_for(std::chrono::microseconds(500));
   }
+
+  log_.INFO("IMU-MANAGER", "Thread shutting down");
 }
+
 }}  // namespace hyped::sensors

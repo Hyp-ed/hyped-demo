@@ -89,8 +89,8 @@ void Navigation::updateData()
   nav_data.braking_distance = getBrakingDistance();
   data_.setNavigationData(nav_data);
 
-  // Print some info every 1000 updates
-  if (update_counter_ % 1000 == 0) {
+  // Print some info every 200,000 updates
+  if (update_counter_ % 200000 == 0) {
     log_.DBG("NAV", "%d: Data Update: a=%.3f, v=%.3f, d=%.3f",
                update_counter_, nav_data.acceleration, nav_data.velocity, nav_data.distance);
   }

@@ -66,6 +66,7 @@ void BmsManager::run()
 
     Thread::sleep(1000);
   }
+  log_.INFO("BMS-MANAGER", "Thread shutting down");
 }
 
 bool BmsManager::batteriesInRange()
