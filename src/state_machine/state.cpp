@@ -26,7 +26,8 @@ namespace state_machine {
 
 State::State(Logger& log, Main* state_machine)
   : log_(log),
-    data_(data::Data::getInstance())
+    data_(data::Data::getInstance()),
+    state_machine_(state_machine)
 {}
 
 void State::checkEmergencyStop()
@@ -58,12 +59,13 @@ void Idle::TransitionCheck()
     log_.INFO("STATE", "launch command received");
     telemetry_data_.launch_command = false;
     data_.setTelemetryData(telemetry_data_);
+    log_.DBG("STATE", "launch command cleared");
 
     sm_data_.current_state = data::State::kAccelerating;
     data_.setStateMachineData(sm_data_);
 
     state_machine_->current_state_ = state_machine_->accelerating_;
-
+    log_.DBG("STATE", "Transitioned to 'Accelerating'");
   }
 }
 
@@ -97,9 +99,10 @@ void NominalBraking::TransitionCheck()
   brakes_data_    = data_.getBrakesData();
   sm_data_        = data_.getStateMachineData();
 
-  if (nav_data_.acceleration >= -0.1 && nav_data_.acceleration <= 0.1
+  log_.DBG3("STATE", "Waiting for the pod to stop. Current velocity: %fm/s", nav_data_.velocity);
+  if (nav_data_.velocity >= -0.1 && nav_data_.velocity <= 0.1
     && brakes_data_.engaged) {
-    log_.INFO("STATE", "Acceleration reached zero.");
+    log_.INFO("STATE", "Velocity reached zero.");
 
     sm_data_.current_state = data::State::kFinished;
     data_.setStateMachineData(sm_data_);
