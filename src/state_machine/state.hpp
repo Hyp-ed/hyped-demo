@@ -26,7 +26,6 @@
 #include "state_machine/main.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
-#include "utils/io/gpio.hpp"
 #include "utils/timer.hpp"
 
 namespace hyped {
