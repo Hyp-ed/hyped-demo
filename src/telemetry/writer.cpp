@@ -34,7 +34,8 @@ void Writer::packAdditionalData()
   rjwriter_.StartArray();
 
   // edit below
-
+  add("acc_x", -1000.0, 1000.0, "m/s^2", data_.getSensorsImuData().value.acc_x);
+  add("curr_state", data_.getStateMachineData().current_state);
   // edit above
 
   rjwriter_.EndArray();
