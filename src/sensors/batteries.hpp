@@ -1,8 +1,8 @@
 /*
- * Author: Lukas Schaefer, Neil McBlane, Branislav Pilnan
+ * Author: HYPED
  * Organisation: HYPED
- * Date: 04/10/2020
- * Description: Main file for navigation class.
+ * Date: 05/10/2020
+ * Description: Main class for demo BMS (Battery Management System) driver
  *
  *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -15,34 +15,40 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-#ifndef NAVIGATION_MAIN_HPP_
-#define NAVIGATION_MAIN_HPP_
 
-#include "data/data.hpp"
-#include "navigation/navigation.hpp"
-#include "utils/concurrent/thread.hpp"
+#ifndef SENSORS_BATTERIES_HPP_
+#define SENSORS_BATTERIES_HPP_
+
+#include "sensors/interface.hpp"
 #include "utils/logger.hpp"
-#include "utils/system.hpp"
 
 namespace hyped {
 
-using utils::concurrent::Thread;
-using utils::System;
 using utils::Logger;
 
-namespace navigation {
+namespace sensors {
 
-class Main: public Thread {
+
+class Batteries : public BMSInterface {
  public:
-  explicit Main(uint8_t id, Logger& log);
-  void run() override;
+  /*
+   * @brief Construct a new Batteries object
+   *
+   * @param log=
+   */
+  explicit Batteries(Logger& log);
+
+  /*
+   * @brief Generates random battery stats
+   * @param[out] battery_data BatteryData output pointer
+   */
+  void getData(BatteryData* battery_data) override;
+  bool isOnline() override;
 
  private:
-  Logger& log_;
-  System& sys_;
-  Navigation nav_;
+  utils::Logger& log_;
 };
 
-}}  // namespace hyped::navigation
+}}    // namespace hyped::sensors
 
-#endif  // NAVIGATION_MAIN_HPP_
+#endif  // SENSORS_BATTERIES_HPP_

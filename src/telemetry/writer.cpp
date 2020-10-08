@@ -34,7 +34,46 @@ void Writer::packAdditionalData()
   rjwriter_.StartArray();
 
   // edit below
+  data::Sensors      sensor_data  = data_.getSensorsData();
+  data::Batteries    battery_data = data_.getBatteriesData();
+  data::Brakes       brakes_data  = data_.getBrakesData();
+  data::Navigation   nav_data     = data_.getNavigationData();
+  data::Motors       motors_data  = data_.getMotorData();
+  data::Telemetry    tlm_data     = data_.getTelemetryData();
+  data::StateMachine stm_data     = data_.getStateMachineData();
 
+  add("curr_state", stm_data.current_state);
+  add("acc_x", -1000.0, 1000.0, "m/s^2", sensor_data.imu.value.acc_x);
+  add("velocity", -10.0, 100.0, "m/s", nav_data.velocity);
+  add("distance", -10.0, 1300.0, "m", nav_data.distance);
+
+  startList("Module statuses");
+  add("Sensors", sensor_data.module_status);
+  add("Batteries", battery_data.module_status);
+  add("Brakes", brakes_data.module_status);
+  add("Navigation", nav_data.module_status);
+  add("Motors", motors_data.module_status);
+  add("Telemetry", tlm_data.module_status);
+  add("State machine crit. failure", stm_data.critical_failure);
+  endList();  // Module statuses
+
+  startList("Batteries");
+  startList("1");
+  add("Voltage", 17.5, 29.4, "V", static_cast<float>(battery_data.readings[0].voltage / 10.0));
+  add("Temperature", 10.0, 60.0, "degC", battery_data.readings[0].average_temperature);
+  add("Charge", 20, 100, "%", battery_data.readings[0].charge);
+  endList();  // 1
+  startList("2");
+  add("Voltage", 17.5, 29.4, "V", static_cast<float>(battery_data.readings[1].voltage / 10.0));
+  add("Temperature", 10.0, 60.0, "degC", battery_data.readings[1].average_temperature);
+  add("Charge", 20, 100, "%", battery_data.readings[1].charge);
+  endList();  // 2
+  startList("3");
+  add("Voltage", 17.5, 29.4, "V", static_cast<float>(battery_data.readings[2].voltage / 10.0));
+  add("Temperature", 10.0, 60.0, "degC", battery_data.readings[2].average_temperature);
+  add("Charge", 20, 100, "%", battery_data.readings[2].charge);
+  endList();  // 3
+  endList();  // Batteries
   // edit above
 
   rjwriter_.EndArray();
@@ -161,7 +200,7 @@ const char* Writer::convertStateMachineState(data::State state)
     case data::State::kFailureStopped:
       return "FAILURE_STOPPED";
     case data::State::kIdle:
-      return "IDLE";
+      return "READY";
     case data::State::kCalibrating:
       return "CALIBRATING";
     case data::State::kRunComplete:

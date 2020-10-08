@@ -22,18 +22,14 @@
 
 #include <cstdint>
 #include <array>
-#include <vector>
-#include "utils/math/vector.hpp"
 #include "data/data_point.hpp"
 #include "utils/concurrent/lock.hpp"
 
 using std::array;
-using std::vector;
 
 namespace hyped {
 
 // imports
-using utils::math::Vector;
 using utils::concurrent::Lock;
 
 namespace data {
@@ -56,76 +52,44 @@ struct Module {
 // Navigation
 // -------------------------------------------------------------------------------------------------
 typedef float NavigationType;
-typedef Vector<NavigationType, 3> NavigationVector;
 struct Navigation : public Module {
   NavigationType  distance;  // m
   NavigationType  velocity;  // m/s
   NavigationType  acceleration;  // m/s^2
-  NavigationType emergency_braking_distance;
   NavigationType  braking_distance = 750;  // m
 };
 
 // -------------------------------------------------------------------------------------------------
 // Raw Sensor data
 // -------------------------------------------------------------------------------------------------
-struct Sensor {
+struct SensorData {
   bool operational;
 };
 
-struct ImuData : public Sensor {
-  NavigationVector acc;
-
-  std::vector<NavigationVector> fifo;
-};
-
-struct EncoderData : public Sensor {
-  NavigationType disp;
-};
-
-struct StripeCounter : public Sensor {
-  DataPoint<uint32_t> count;
-};
-
-struct TemperatureData : public Sensor {
-  int temp;   // C
+struct ImuData : public SensorData {
+  NavigationType acc_x;
 };
 
 struct Sensors : public Module {
-  static constexpr int kNumImus = 4;
-  static constexpr int kNumEncoders = 4;
-  static constexpr int kNumKeyence = 2;
-
-  DataPoint<array<ImuData, kNumImus>> imu;
-  DataPoint<array<EncoderData, kNumEncoders>> encoder;
-  array<StripeCounter, kNumKeyence>  keyence_stripe_counter;
+  static constexpr int kNumImus = 1;
+  DataPoint<ImuData> imu;
 };
 
 struct BatteryData {
   static constexpr int kNumCells = 36;
   uint16_t  voltage;                    // dV
-  int16_t   current;                    // dA
   uint8_t   charge;                     // %
   int8_t    average_temperature;        // C
-
-  // below only for BMSHP! Value for BMSLP = 0
-  uint16_t  cell_voltage[kNumCells];    // mV
-  int8_t    low_temperature;            // C
-  int8_t    high_temperature;           // C
-  uint16_t  low_voltage_cell;           // mV
-  uint16_t  high_voltage_cell;          // mV
-  bool      imd_fault;
 };
 
 struct Batteries : public Module {
-  static constexpr int kNumLPBatteries = 3;
-  static constexpr int kNumHPBatteries = 2;
+  static constexpr int kNumBatteries = 3;
 
-  array<BatteryData, kNumLPBatteries> low_power_batteries;
-  array<BatteryData, kNumHPBatteries> high_power_batteries;
+  array<BatteryData, kNumBatteries> readings;
 };
 
-struct EmergencyBrakes : public Module {
-  bool brakes_retracted[4] = {false};       // true if brakes retract
+struct Brakes : public Module {
+  bool engaged = false;
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -210,21 +174,6 @@ class Data {
    */
   void setNavigationData(const Navigation& nav_data);
 
-
-  /**
-   * @brief Get the Temperature from averaged thermistor values
-   *
-   * @return int temperature in degrees C
-   */
-  int getTemperature();
-
-  /**
-   * @brief Set the Temperature from averaged thermistor values
-   *
-   * @param temp - temp in degrees C
-   */
-  void setTemperature(const int& temp);
-
   /**
    * @brief      Retrieves data from all sensors
    */
@@ -233,17 +182,7 @@ class Data {
   /**
    * @brief retrieves imu data from Sensors
    */
-  DataPoint<array<ImuData, Sensors::kNumImus>> getSensorsImuData();
-
-  /**
-   * @brief retrieves encoder data from Sensors
-   */
-  DataPoint<array<EncoderData, Sensors::kNumEncoders>> getSensorsEncoderData();
-
-  /**
-   * @brief retrieves gpio_counter data from Sensors
-   */
-  array<StripeCounter, Sensors::kNumKeyence> getSensorsKeyenceData();
+  DataPoint<ImuData> getSensorsImuData();
 
   /**
    * @brief      Should be called to update sensor data.
@@ -252,15 +191,7 @@ class Data {
   /**
    * @brief      Should be called to update sensor imu data.
    */
-  void setSensorsImuData(const DataPoint<array<ImuData, Sensors::kNumImus>>& imu);
-  /**
-   * @brief      Should be called to update sensor encoder data.
-   */
-  void setSensorsEncoderData(const DataPoint<array<EncoderData, Sensors::kNumEncoders>>& imu);
-  /**
-   * @brief      Should be called to update sensor keyence data.
-   */
-  void setSensorsKeyenceData(const array<StripeCounter, Sensors::kNumKeyence>&  keyence_stripe_counter);  //NOLINT
+  void setSensorsImuData(const DataPoint<ImuData>& imu);
 
   /**
    * @brief      Retrieves data from the batteries.
@@ -273,14 +204,14 @@ class Data {
   void setBatteriesData(const Batteries& batteries_data);
 
   /**
-   * @brief      Retrieves data from the emergency brakes.
+   * @brief      Retrieves data from the brakes.
    */
-  EmergencyBrakes getEmergencyBrakesData();
+  Brakes getBrakesData();
 
   /**
-   * @brief      Should be called to update emergency brakes data
+   * @brief      Should be called to update brakes data
    */
-  void setEmergencyBrakesData(const EmergencyBrakes& emergency_brakes_data);
+  void setBrakesData(const Brakes& brakes_data);
 
   /**
    * @brief      Retrieves data produced by each of the four motors.
@@ -309,8 +240,7 @@ class Data {
   Motors motors_;
   Batteries batteries_;
   Telemetry telemetry_;
-  EmergencyBrakes emergency_brakes_;
-  int temperature_;  // In degrees C
+  Brakes brakes_;
 
 
   // locks for data substructures
@@ -318,11 +248,10 @@ class Data {
   Lock lock_navigation_;
   Lock lock_sensors_;
   Lock lock_motors_;
-  Lock lock_temp_;
 
   Lock lock_telemetry_;
   Lock lock_batteries_;
-  Lock lock_emergency_brakes_;
+  Lock lock_brakes_;
 
   Data() {}
 

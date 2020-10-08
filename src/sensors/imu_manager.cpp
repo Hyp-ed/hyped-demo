@@ -1,7 +1,7 @@
 /*
- * Author:
+ * Author: HYPED
  * Organisation: HYPED
- * Date:
+ * Date: 03/10/2020
  * Description: IMU manager for getting IMU data from around the pod and pushes to data struct
  *
  *    Copyright 2019 HYPED
@@ -21,8 +21,10 @@
 
 #include "sensors/imu_manager.hpp"
 
+#include <chrono>
+#include <thread>
+
 #include "sensors/imu.hpp"
-#include "sensors/fake_imu.hpp"
 #include "utils/timer.hpp"
 #include "utils/config.hpp"
 
@@ -31,48 +33,34 @@ namespace hyped {
 using data::Data;
 using data::Sensors;
 using utils::System;
+using utils::Timer;
 
 namespace sensors {
 ImuManager::ImuManager(Logger& log)
     : Thread(log),
       sys_(System::getSystem()),
       data_(Data::getInstance()),
-      imu_ {0}
+      imu_ {nullptr}
 {
-  if (!(sys_.fake_imu || sys_.fake_imu_fail)) {
-    utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k4MHz);
+  // Create IMU(s)
+  imu_ = sys_.config->interfaceFactory.getImuInterfaceInstance();
 
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {   // creates new real IMU objects
-      imu_[i] = new Imu(log, sys_.config->sensors.chip_select[i], false);
-    }
-  } else if (sys_.fake_imu_fail) {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
-      // change params to fail in kAcccelerating or kNominalBraking states
-      imu_[i] = new FakeImuFromFile(log,
-                                    "data/in/acc_state.txt",
-                                    "data/in/decel_state.txt",
-                                    "data/in/decel_state.txt", (i%2 == 0), false);
-    }
-  } else {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
-      imu_[i] = new FakeImuFromFile(log,
-                                    "data/in/acc_state.txt",
-                                    "data/in/decel_state.txt",
-                                    "data/in/decel_state.txt", false, false);
-    }
-  }
   log_.INFO("IMU-MANAGER", "imu manager has been initialised");
 }
 
 void ImuManager::run()
 {
-  // collect real data while system is running
+  // Keep collecting data while the system is running
   while (sys_.running_) {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
-      if (imu_[i]) imu_[i]->getData(&(sensors_imu_.value[i]));
-    }
-    sensors_imu_.timestamp = utils::Timer::getTimeMicros();
-    data_.setSensorsImuData(sensors_imu_);
+    imu_->getAccelerationX(&(imu_datapoint_.value));
+    imu_datapoint_.timestamp = Timer::getTimeMicros();
+    data_.setSensorsImuData(imu_datapoint_);
+
+  // Add delay to simulate slow I/O
+    std::this_thread::sleep_for(std::chrono::microseconds(500));
   }
+
+  log_.INFO("IMU-MANAGER", "Thread shutting down");
 }
+
 }}  // namespace hyped::sensors

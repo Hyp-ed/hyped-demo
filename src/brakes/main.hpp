@@ -1,10 +1,10 @@
 /*
-* Author: Kornelija Sukyte
+* Author: Kornelija Sukyte, Branislav Pilnan
 * Organisation: HYPED
-* Date:
-* Description: Entrypoint class to the embrake module, started in it's own thread.
+* Date: 03/10/2020
+* Description: Entrypoint class to the brakes module, started in it's own thread.
 *
-*    Copyright 2019 HYPED
+*    Copyright 2020 HYPED
 *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 *    except in compliance with the License. You may obtain a copy of the License at
 *
@@ -16,24 +16,23 @@
 *    limitations under the License.
 */
 
-#ifndef EMBRAKES_MAIN_HPP_
-#define EMBRAKES_MAIN_HPP_
+#ifndef BRAKES_MAIN_HPP_
+#define BRAKES_MAIN_HPP_
 
 #include "utils/concurrent/thread.hpp"
 #include "utils/system.hpp"
 #include "utils/logger.hpp"
 #include "data/data.hpp"
 
-#include "embrakes/stepper.hpp"
+#include "brakes/brakes.hpp"
 
 namespace hyped {
 
 using utils::concurrent::Thread;
 using utils::Logger;
-using utils::System;
 using data::ModuleStatus;
 
-namespace embrakes {
+namespace brakes {
 /*
  * @description This module handles the interaction with the embrakes.
 */
@@ -46,25 +45,16 @@ class Main : public Thread
     Main(uint8_t id, Logger &log);
 
     /*
-    * @brief Checks for State kCalibrating to start retracting process
+    * @brief Checks for braking states to engage the brakes
     */
     void run() override;
 
   private:
-    Logger&                log_;
-    data::Data&            data_;
-    utils::System&         sys_;
-    data::StateMachine     sm_data_;
-    data::EmergencyBrakes  em_brakes_;
-    data::Telemetry        tlm_data_;
-    int                    command_pins_[4];
-    int                    button_pins_[4];
-    Stepper*               brake_1;
-    // Stepper*               brake_2;
-    // Stepper*               brake_3;
-    // Stepper*               brake_4;
+    Logger&     log_;
+    data::Data& data_;
+    Brakes      brakes_;
 };
 
-}}
+}}  // namespace hyped::embrakes
 
-#endif  // EMBRAKES_MAIN_HPP_
+#endif  // BRAKES_MAIN_HPP_
