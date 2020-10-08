@@ -83,7 +83,7 @@ void Accelerating::transitionCheck()
     log_.INFO("STM", "current distance: %fm, braking distance: %fm",
               nav_data_.distance, nav_data_.braking_distance);
 
-    log_.DBG("STM", "Transitioned to 'Nominal Braking'");          
+    log_.DBG("STM", "Transitioned to 'Nominal Braking'");
   }
 }
 
