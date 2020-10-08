@@ -59,9 +59,9 @@ class State {
   Main* state_machine_;
 };
 
-class Idle : public State {
+class Ready : public State {
  public:
-  Idle(Logger& log, Main* state_machine) : State(log, state_machine) {}
+  Ready(Logger& log, Main* state_machine) : State(log, state_machine) {}
 
   /*
    * @brief   Checks for launch command

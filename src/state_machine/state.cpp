@@ -36,7 +36,7 @@ void State::checkEmergencyStop()
   sm_data_        = data_.getStateMachineData();
 
   if (telemetry_data_.emergency_stop_command) {
-    log_.ERR("STATE", "STOP command received");
+    log_.ERR("STM", "STOP command received");
     telemetry_data_.emergency_stop_command = false;
     data_.setTelemetryData(telemetry_data_);
 
@@ -47,24 +47,24 @@ void State::checkEmergencyStop()
   }
 }
 
-// Idle state
+// Ready state
 
-void Idle::transitionCheck()
+void Ready::transitionCheck()
 {
   telemetry_data_ = data_.getTelemetryData();
   sm_data_        = data_.getStateMachineData();
 
   if (telemetry_data_.launch_command) {
-    log_.INFO("STATE", "launch command received");
+    log_.INFO("STM", "launch command received");
     telemetry_data_.launch_command = false;
     data_.setTelemetryData(telemetry_data_);
-    log_.DBG("STATE", "launch command cleared");
+    log_.DBG("STM", "launch command cleared");
 
     sm_data_.current_state = data::State::kAccelerating;
     data_.setStateMachineData(sm_data_);
 
     state_machine_->current_state_ = state_machine_->accelerating_;
-    log_.DBG("STATE", "Transitioned to 'Accelerating'");
+    log_.DBG("STM", "Transitioned to 'Accelerating'");
   }
 }
 
@@ -79,8 +79,8 @@ void Accelerating::transitionCheck()
   if (nav_data_.distance +
     nav_data_.braking_distance +
     20 >= telemetry_data_.run_length) {
-    log_.INFO("STATE", "max distance reached");
-    log_.INFO("STATE", "current distance: %fm, braking distance: %fm",
+    log_.INFO("STM", "max distance reached");
+    log_.INFO("STM", "current distance: %fm, braking distance: %fm",
               nav_data_.distance, nav_data_.braking_distance);
 
     sm_data_.current_state = data::State::kNominalBraking;
@@ -98,10 +98,10 @@ void NominalBraking::transitionCheck()
   brakes_data_    = data_.getBrakesData();
   sm_data_        = data_.getStateMachineData();
 
-  log_.DBG3("STATE", "Waiting for the pod to stop. Current velocity: %fm/s", nav_data_.velocity);
+  log_.DBG3("STM", "Waiting for the pod to stop. Current velocity: %fm/s", nav_data_.velocity);
   if (nav_data_.velocity >= -0.1 && nav_data_.velocity <= 0.1
     && brakes_data_.engaged) {
-    log_.INFO("STATE", "Velocity reached zero.");
+    log_.INFO("STM", "Velocity reached zero.");
 
     sm_data_.current_state = data::State::kFinished;
     data_.setStateMachineData(sm_data_);
@@ -114,18 +114,14 @@ void NominalBraking::transitionCheck()
 
 void Finished::transitionCheck()
 {
+  utils::System& sys = utils::System::getSystem();
   telemetry_data_ = data_.getTelemetryData();
   sm_data_        = data_.getStateMachineData();
 
   if (telemetry_data_.reset_command) {
-    log_.INFO("STATE", "reset command received");
-    telemetry_data_.reset_command = false;  // reset the command to false
-    data_.setTelemetryData(telemetry_data_);
-
-    sm_data_.current_state = data::State::kIdle;
-    data_.setStateMachineData(sm_data_);
-
-    state_machine_->current_state_ = state_machine_->idle_;
+    log_.INFO("STM", "Reset command received");
+    log_.INFO("STM", "System is shutting down");
+    sys.running_ = false;
   }
 }
 

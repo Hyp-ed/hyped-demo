@@ -40,7 +40,7 @@ using data::ModuleStatus;
 namespace state_machine {
 
 class State;
-class Idle;
+class Ready;
 class Accelerating;
 class NominalBraking;
 class Finished;
@@ -50,7 +50,7 @@ class Main: public Thread {
   void run() override;
 
   State          *current_state_;
-  Idle           *idle_;
+  Ready          *ready_;
   Accelerating   *accelerating_;
   NominalBraking *nominal_braking_;
   Finished       *finished_;
