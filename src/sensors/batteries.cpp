@@ -32,9 +32,9 @@ void Batteries::getData(BatteryData* battery_data)
 {
   static std::default_random_engine generator;
   static std::normal_distribution<float> distribution;
-  battery_data->voltage             = int(234 + 10*distribution(generator));
-  battery_data->charge              = int(50 + 5*distribution(generator));
-  battery_data->average_temperature = int(30 + 5*distribution(generator));
+  battery_data->voltage             = static_cast<int>(234 + 10*distribution(generator));
+  battery_data->charge              = static_cast<int>(50 + 5*distribution(generator));
+  battery_data->average_temperature = static_cast<int>(30 + 5*distribution(generator));
 }
 
 bool Batteries::isOnline()

@@ -59,17 +59,17 @@ void Writer::packAdditionalData()
 
   startList("Batteries");
   startList("1");
-  add("Voltage", 17.5, 29.4, "V", (float)(battery_data.readings[0].voltage / 10.0));
+  add("Voltage", 17.5, 29.4, "V", static_cast<float>(battery_data.readings[0].voltage / 10.0));
   add("Temperature", 10.0, 60.0, "degC", battery_data.readings[0].average_temperature);
   add("Charge", 20, 100, "%", battery_data.readings[0].charge);
   endList();  // 1
   startList("2");
-  add("Voltage", 17.5, 29.4, "V", (float)(battery_data.readings[1].voltage / 10.0));
+  add("Voltage", 17.5, 29.4, "V", static_cast<float>(battery_data.readings[1].voltage / 10.0));
   add("Temperature", 10.0, 60.0, "degC", battery_data.readings[1].average_temperature);
   add("Charge", 20, 100, "%", battery_data.readings[1].charge);
   endList();  // 2
   startList("3");
-  add("Voltage", 17.5, 29.4, "V", (float)(battery_data.readings[2].voltage / 10.0));
+  add("Voltage", 17.5, 29.4, "V", static_cast<float>(battery_data.readings[2].voltage / 10.0));
   add("Temperature", 10.0, 60.0, "degC", battery_data.readings[2].average_temperature);
   add("Charge", 20, 100, "%", battery_data.readings[2].charge);
   endList();  // 3

@@ -49,17 +49,11 @@ class Main: public Thread {
   explicit Main(uint8_t id, Logger& log);
   void run() override;
 
-  State                 *current_state_;
-  Idle                  *idle_;
-  Accelerating          *accelerating_;
-  NominalBraking        *nominal_braking_;
-  Finished              *finished_;
-
- private:
-  utils::System&        sys_;
-  data::Data&           data_;
-  data::StateMachine    sm_data_;
-
+  State          *current_state_;
+  Idle           *idle_;
+  Accelerating   *accelerating_;
+  NominalBraking *nominal_braking_;
+  Finished       *finished_;
 };
 
 }  // namespace state_machine

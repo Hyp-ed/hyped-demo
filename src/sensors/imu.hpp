@@ -42,7 +42,7 @@ namespace sensors {
  */
 class Imu : public ImuInterface {
  public:
-  Imu(Logger& log);
+  explicit Imu(Logger& log);
   /*
    *  @brief Returns if the sensor is online
    *

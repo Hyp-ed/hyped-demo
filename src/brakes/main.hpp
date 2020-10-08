@@ -16,8 +16,8 @@
 *    limitations under the License.
 */
 
-#ifndef EMBRAKES_MAIN_HPP_
-#define EMBRAKES_MAIN_HPP_
+#ifndef BRAKES_MAIN_HPP_
+#define BRAKES_MAIN_HPP_
 
 #include "utils/concurrent/thread.hpp"
 #include "utils/system.hpp"
@@ -57,4 +57,4 @@ class Main : public Thread
 
 }}  // namespace hyped::embrakes
 
-#endif  // EMBRAKES_MAIN_HPP_
+#endif  // BRAKES_MAIN_HPP_

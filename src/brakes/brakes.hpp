@@ -16,8 +16,8 @@
 *    limitations under the License.
 */
 
-#ifndef EMBRAKES_STEPPER_HPP_
-#define EMBRAKES_STEPPER_HPP_
+#ifndef BRAKES_BRAKES_HPP_
+#define BRAKES_BRAKES_HPP_
 
 #include "utils/timer.hpp"
 #include "utils/logger.hpp"
@@ -60,4 +60,4 @@ class Brakes {
 
 }}  // namespace hyped::embrakes
 
-#endif  // EMBRAKES_STEPPER_HPP_
+#endif  // BRAKES_BRAKES_HPP_

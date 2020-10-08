@@ -19,8 +19,8 @@
  *    limitations under the License.
  */
 
-#ifndef STATE_MACHINE_STATES_HPP_
-#define STATE_MACHINE_STATES_HPP_
+#ifndef STATE_MACHINE_STATE_HPP_
+#define STATE_MACHINE_STATE_HPP_
 
 #include "data/data.hpp"
 #include "state_machine/main.hpp"
@@ -38,13 +38,12 @@ namespace state_machine {
 class Main;  // Forward declaration
 
 class State {
-
  public:
   State(Logger& log, Main* state_machine);
 
   void checkEmergencyStop();
 
-  virtual void TransitionCheck() = 0;
+  virtual void transitionCheck() = 0;
 
   Logger&               log_;
   data::Data&           data_;
@@ -58,46 +57,49 @@ class State {
 
  protected:
   Main* state_machine_;
-
 };
 
 class Idle : public State {
-
  public:
-  Idle(Logger& log, Main* state_machine) : State(log, state_machine){}
+  Idle(Logger& log, Main* state_machine) : State(log, state_machine) {}
 
-  void TransitionCheck(); // Check for launch command
-
+  /*
+   * @brief   Checks for launch command
+   */
+  void transitionCheck();
 };
 
 class Accelerating : public State {
-
  public:
-  Accelerating(Logger& log, Main* state_machine) : State(log, state_machine){}
+  Accelerating(Logger& log, Main* state_machine) : State(log, state_machine) {}
 
-  void TransitionCheck(); // Check if max distance reached
-
+  /*
+   * @brief   Checks if max distance reached
+   */
+  void transitionCheck();
 };
 
 class NominalBraking : public State {
-
  public:
-  NominalBraking(Logger& log, Main* state_machine) : State(log, state_machine){}
+  NominalBraking(Logger& log, Main* state_machine) : State(log, state_machine) {}
 
-  void TransitionCheck(); // check if pod is at rest
-
+  /*
+   * @brief   Checks if pod is at rest
+   */
+  void transitionCheck();
 };
 
 class Finished : public State {
-
  public:
-  Finished(Logger& log, Main* state_machine) : State(log, state_machine){}
+  Finished(Logger& log, Main* state_machine) : State(log, state_machine) {}
 
-  void TransitionCheck(); // Check if command to reset was sent
-
+  /*
+   * @brief   Checks if command to reset was sent
+   */
+  void transitionCheck();
 };
 
 }  // namespace state_machine
 }  // namespace hyped
 
-#endif  // STATE_MACHINE_STATES_HPP_
+#endif  // STATE_MACHINE_STATE_HPP_

@@ -44,13 +44,12 @@ void State::checkEmergencyStop()
     data_.setStateMachineData(sm_data_);
 
     state_machine_->current_state_ = state_machine_->finished_;
-
   }
 }
 
 // Idle state
 
-void Idle::TransitionCheck()
+void Idle::transitionCheck()
 {
   telemetry_data_ = data_.getTelemetryData();
   sm_data_        = data_.getStateMachineData();
@@ -71,7 +70,7 @@ void Idle::TransitionCheck()
 
 // Accelerating state
 
-void Accelerating::TransitionCheck()
+void Accelerating::transitionCheck()
 {
   nav_data_       = data_.getNavigationData();
   sm_data_        = data_.getStateMachineData();
@@ -81,8 +80,8 @@ void Accelerating::TransitionCheck()
     nav_data_.braking_distance +
     20 >= telemetry_data_.run_length) {
     log_.INFO("STATE", "max distance reached");
-    log_.INFO("STATE", "current distance, braking distance: %f %f"
-    , nav_data_.distance, nav_data_.braking_distance);
+    log_.INFO("STATE", "current distance: %fm, braking distance: %fm",
+              nav_data_.distance, nav_data_.braking_distance);
 
     sm_data_.current_state = data::State::kNominalBraking;
     data_.setStateMachineData(sm_data_);
@@ -93,7 +92,7 @@ void Accelerating::TransitionCheck()
 
 // Nominal braking state
 
-void NominalBraking::TransitionCheck()
+void NominalBraking::transitionCheck()
 {
   nav_data_       = data_.getNavigationData();
   brakes_data_    = data_.getBrakesData();
@@ -113,7 +112,7 @@ void NominalBraking::TransitionCheck()
 
 // Finished state
 
-void Finished::TransitionCheck()
+void Finished::transitionCheck()
 {
   telemetry_data_ = data_.getTelemetryData();
   sm_data_        = data_.getStateMachineData();

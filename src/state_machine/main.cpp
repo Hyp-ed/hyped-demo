@@ -24,39 +24,35 @@
 namespace hyped {
 namespace state_machine {
 
-Main::Main(uint8_t id, Logger& log)
-  : Thread(id, log),
-    sys_(utils::System::getSystem()),
-    data_(data::Data::getInstance())
-{}
+Main::Main(uint8_t id, Logger& log) : Thread(id, log)
+{
+  idle_ = new Idle(log_, this);  // constructing state object for Idle
+  accelerating_ = new Accelerating(log_, this);  // constructing state object for Accelerating
+  nominal_braking_ = new NominalBraking(log_, this);  // constructing state obj. for Nominal braking
+  finished_ = new Finished(log_, this);  // constructing state object for Finished
+
+  current_state_ = idle_;  // set current state to point to Idle
+}
 
 /**
   *  @brief  Runs state machine thread.
   */
-
 void Main::run()
 {
   utils::System& sys = utils::System::getSystem();
+  data::Data& data = data::Data::getInstance();
 
-  idle_ = new Idle(log_, this); // constructing state object for Idle
-  accelerating_ = new Accelerating(log_, this); // constructing state object for Accelerating
-  nominal_braking_ = new NominalBraking(log_, this); // constructing state object for Nominal braking
-  finished_ = new Finished(log_, this); // constructing state object for Finished
-
-  current_state_ = idle_; // set current state to point to Idle
-
-  sm_data_        = data_.getStateMachineData();
-  sm_data_.current_state = data::State::kIdle; // s et current state in data structure
+  data::StateMachine sm_data = data.getStateMachineData();
+  sm_data.current_state = data::State::kIdle;  // set current state in data structure
+  data.setStateMachineData(sm_data);
 
   while (sys.running_) {
-
     current_state_->checkEmergencyStop();
-    current_state_->TransitionCheck();
-
+    current_state_->transitionCheck();
   }
 
-  sm_data_        = data_.getStateMachineData();
-  log_.INFO("STM", "Exiting. Current state: %s", data::states[sm_data_.current_state]);
+  sm_data = data.getStateMachineData();
+  log_.INFO("STM", "Exiting. Current state: %s", data::states[sm_data.current_state]);
 }
 
 }  // namespace state_machine

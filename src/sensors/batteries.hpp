@@ -16,8 +16,8 @@
  *    limitations under the License.
  */
 
-#ifndef SENSORS_FAKE_BATTERIES_HPP_
-#define SENSORS_FAKE_BATTERIES_HPP_
+#ifndef SENSORS_BATTERIES_HPP_
+#define SENSORS_BATTERIES_HPP_
 
 #include "sensors/interface.hpp"
 #include "utils/logger.hpp"
@@ -36,7 +36,7 @@ class Batteries : public BMSInterface {
    *
    * @param log=
    */
-  Batteries(Logger& log);
+  explicit Batteries(Logger& log);
 
   /*
    * @brief Generates random battery stats
@@ -51,4 +51,4 @@ class Batteries : public BMSInterface {
 
 }}    // namespace hyped::sensors
 
-#endif  // SENSORS_FAKE_BATTERIES_HPP_
+#endif  // SENSORS_BATTERIES_HPP_
