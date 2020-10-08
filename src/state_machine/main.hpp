@@ -42,7 +42,6 @@ namespace state_machine {
 class State;
 class Ready;
 class Accelerating;
-class NominalBraking;
 class Finished;
 class Main: public Thread {
  public:
@@ -52,7 +51,6 @@ class Main: public Thread {
   State          *current_state_;
   Ready          *ready_;
   Accelerating   *accelerating_;
-  NominalBraking *nominal_braking_;
   Finished       *finished_;
 };
 

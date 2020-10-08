@@ -79,16 +79,6 @@ class Accelerating : public State {
   void transitionCheck();
 };
 
-class NominalBraking : public State {
- public:
-  NominalBraking(Logger& log, Main* state_machine) : State(log, state_machine) {}
-
-  /*
-   * @brief   Checks if pod is at rest
-   */
-  void transitionCheck();
-};
-
 class Finished : public State {
  public:
   Finished(Logger& log, Main* state_machine) : State(log, state_machine) {}

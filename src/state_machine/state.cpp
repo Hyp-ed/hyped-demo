@@ -83,30 +83,7 @@ void Accelerating::transitionCheck()
     log_.INFO("STM", "current distance: %fm, braking distance: %fm",
               nav_data_.distance, nav_data_.braking_distance);
 
-    sm_data_.current_state = data::State::kNominalBraking;
-    data_.setStateMachineData(sm_data_);
-
-    state_machine_->current_state_ = state_machine_->nominal_braking_;
-  }
-}
-
-// Nominal braking state
-
-void NominalBraking::transitionCheck()
-{
-  nav_data_       = data_.getNavigationData();
-  brakes_data_    = data_.getBrakesData();
-  sm_data_        = data_.getStateMachineData();
-
-  log_.DBG3("STM", "Waiting for the pod to stop. Current velocity: %fm/s", nav_data_.velocity);
-  if (nav_data_.velocity >= -0.1 && nav_data_.velocity <= 0.1
-    && brakes_data_.engaged) {
-    log_.INFO("STM", "Velocity reached zero.");
-
-    sm_data_.current_state = data::State::kFinished;
-    data_.setStateMachineData(sm_data_);
-
-    state_machine_->current_state_ = state_machine_->finished_;
+    log_.DBG("STM", "Transitioned to 'Nominal Braking'");          
   }
 }
 
