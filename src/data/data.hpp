@@ -48,6 +48,14 @@ struct Module {
   ModuleStatus module_status = ModuleStatus::kStart;
 };
 
+// ------------------------------------------------------------------------------------------------
+// User Interface
+// ------------------------------------------------------------------------------------------------
+struct UI : public Module {
+  bool is_on;
+  uint8_t temperature;
+};
+
 // -------------------------------------------------------------------------------------------------
 // Navigation
 // -------------------------------------------------------------------------------------------------
@@ -233,6 +241,10 @@ class Data {
    */
   void setTelemetryData(const Telemetry& telemetry_data);
 
+  UI getUIData();
+
+  void setUIData(const UI& UI_data);
+
  private:
   StateMachine state_machine_;
   Navigation navigation_;
@@ -241,6 +253,7 @@ class Data {
   Batteries batteries_;
   Telemetry telemetry_;
   Brakes brakes_;
+  UI user_interface_;
 
 
   // locks for data substructures
@@ -252,6 +265,7 @@ class Data {
   Lock lock_telemetry_;
   Lock lock_batteries_;
   Lock lock_brakes_;
+  Lock lock_user_interface_;
 
   Data() {}
 

@@ -139,4 +139,16 @@ void Data::setTelemetryData(const Telemetry& telemetry_data)
   telemetry_ = telemetry_data;
 }
 
+UI Data::getUIData()
+{
+  ScopedLock L(&lock_user_interface_);
+  return user_interface_;
+}
+
+void Data::setUIData(const  UI& ui_data)
+{
+  ScopedLock L(&lock_user_interface_);
+  user_interface_ = ui_data;
+}
+
 }}  // namespace data::hyped
