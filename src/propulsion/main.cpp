@@ -59,6 +59,9 @@ void Main::run()
       }
     } else if (current_state == State::kReady) {
       // Standby and wait
+
+      // We got rid of kIdle for demo so init motors here:
+      state_processor_->initMotors();
     } else if (current_state == State::kAccelerating) {
       // Accelerate the motors
       state_processor_->accelerate();
