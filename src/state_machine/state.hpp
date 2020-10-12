@@ -79,6 +79,12 @@ class Accelerating : public State {
   void transitionCheck();
 };
 
+class Braking : public State {
+ public:
+  Braking(Logger& log, Main* state_machine) : State(log, state_machine) {}
+  void transitionCheck();
+};
+
 class Finished : public State {
  public:
   Finished(Logger& log, Main* state_machine) : State(log, state_machine) {}

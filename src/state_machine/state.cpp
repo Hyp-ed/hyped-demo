@@ -77,13 +77,35 @@ void Accelerating::transitionCheck()
   telemetry_data_ = data_.getTelemetryData();
 
   if (nav_data_.distance +
-    nav_data_.braking_distance +
-    20 >= telemetry_data_.run_length) {
+      nav_data_.braking_distance +
+      20 >= telemetry_data_.run_length) {
     log_.INFO("STM", "max distance reached");
     log_.INFO("STM", "current distance: %fm, braking distance: %fm",
               nav_data_.distance, nav_data_.braking_distance);
 
+    sm_data_.current_state = data::State::kNominalBraking;
+    data_.setStateMachineData(sm_data_);
+
+    state_machine_->current_state_ = state_machine_->braking_;
     log_.DBG("STM", "Transitioned to 'Nominal Braking'");
+  }
+}
+
+// Braking state
+
+void Braking::transitionCheck()
+{
+  nav_data_ = data_.getNavigationData();
+  sm_data_ = data_.getStateMachineData();
+
+  if (nav_data_.velocity <= 0) {
+    log_.INFO("STM", "zero velocity reached");
+
+    sm_data_.current_state = data::State::kFinished;
+    data_.setStateMachineData(sm_data_);
+
+    state_machine_->current_state_ = state_machine_->finished_;
+    log_.INFO("STM", "Transitioned to 'Finished'");
   }
 }
 

@@ -28,6 +28,7 @@ Main::Main(uint8_t id, Logger& log) : Thread(id, log)
 {
   ready_ = new Ready(log_, this);  // constructing state object for Idle
   accelerating_ = new Accelerating(log_, this);  // constructing state object for Accelerating
+  braking_ = new Braking(log_, this);  // constructing state object for Braking
   finished_ = new Finished(log_, this);  // constructing state object for Finished
 
   current_state_ = ready_;  // set current state to point to Idle
