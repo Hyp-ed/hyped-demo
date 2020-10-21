@@ -4,7 +4,7 @@
 [![Coverage Status](https://codecov.io/gh/hyp-ed/hyped-2020/branch/develop/graph/badge.svg)](https://codecov.io/gh/hyp-ed/hyped-2020)
 
 
-This is the official repository of HYPED. HYPED is a student society at the University of Edinburgh dedicated to accelerating the development of Hyperloop and implementing the technology in the UK. HYPED is advancing both technical and commercial development of Hyperloop, having seen success in two international competitions. https://hyp-ed.com/
+This is a **very simplified version** of the main repository of HYPED. HYPED is a student society at the University of Edinburgh dedicated to accelerating the development of Hyperloop and implementing the technology in the UK. HYPED is advancing both technical and commercial development of Hyperloop, having seen success in two international competitions. https://hyp-ed.com/
 
 ## Coding Style
 
